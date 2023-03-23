@@ -1,0 +1,71 @@
+["+", 1, 2]
+["-", 1, 2]
+["/", 1, 2]
+["*", 1, 2]
+["++", "VariableName"]
+["--", "VariableName"]
+[">", 1, 2]
+
+["Set", "x", 123]
+["Print", ["Get", "x"]]
+["Set", "stringExample", 'This is a string']
+["Set", "name", 'Yusuf']
+["Print", ["+", 'Hello',  ["Get", "x"]]]
+
+["If", [">", 5, 0], [1] [2]]
+
+["If", [">", ["Get", "X"], ["Get", "Y"]],
+        [
+            ["Print", 'X is greater than Y']
+        ]
+        [  
+            ["Print", 'X is not greater than Y']
+        ]
+]
+
+["Set", "PrintHelloWorld",
+    ["Function", [],
+        [
+            ["Print", 'Hello World']
+        ]
+    ]
+]
+
+["Set", "SumFunc",
+    ["Function", ["X","Y"],
+        [
+            ["Set", "Z", ["+" , ["Get", "X"], 
+                ["Get", "Y"]]]
+            ["Return", ["Get", "Z"]]
+        ]
+    ]
+]
+
+["Get", "PrintHelloWorld", []]
+
+["Set", "OnePlusTwo", ["Get", "PrintFunctions", [1, 2]]]
+
+[
+    ["Set", "main",
+        ["Function", ["date", "birthdate"],
+            [
+                ["Set", "curYear", 2023]
+                ["Set", "curMonth", 'February']
+                ["Print",
+                    ["-",
+                    ["Get", "date"], 
+                    ["Get", "birthdate"]
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+
+
+000.0001000
+'new
+string'
+-000.00
+'Hello World!'
+-005.000 "6x75"

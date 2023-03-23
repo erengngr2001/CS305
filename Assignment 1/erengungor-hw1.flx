@@ -1,0 +1,141 @@
+tCOMMA ","
+tPLUS "+"
+tMUL "*"
+tINC "++"
+tLBRAC "["
+tGT ">"
+tGEQ ">="
+tEQUALITY "=="
+tMINUS "-"
+tDIV "/"
+tDEC "--"
+tRBRAC "]"
+tLT "<"
+tLEQ "<="
+
+
+tNUM \-?[1-9]+[0-9]*|[+-]?([0-9]*[.])?[0-9]+
+
+tGET \"Get\"
+tSET \"Set\"
+tFUNCTION \"Function\"
+tPRINT \"Print\"
+tFOR \"For\"
+tIF \"If\"
+tRETURN \"Return\"
+
+%{
+    int noLines = 1;
+    #include <stdio.h>
+%}
+
+%%
+
+\n noLines++;
+\"Set\" printf("%d tSET\n", noLines); 
+\"Get\" printf("%d tGET\n", noLines);
+\"If\" printf("%d tIF\n", noLines);
+\"Function\" printf("%d tFUNCTION\n", noLines);
+\"Print\" printf("%d tPRINT\n", noLines);
+\"For\" printf("%d tFOR\n", noLines);
+\"Return\" printf("%d tRETURN\n", noLines);
+
+\, printf("%d tCOMMA\n", noLines);
+\"\+\" printf("%d tPLUS\n", noLines);
+\"\*\" printf("%d tMUL\n", noLines);
+\"\+\+\" printf("%d tINC\n", noLines);
+\[ printf("%d tLBRAC\n", noLines);
+\> printf("%d tGT\n", noLines);
+\>\= printf("%d tGEQ\n", noLines);
+\"\=\=\" printf("%d tEQUALITY\n", noLines);
+\"\-\" printf("%d tMINUS\n", noLines);
+\"\/\" printf("%d tDIV\n", noLines);
+\"\-\-\" printf("%d tDEC\n", noLines);
+\] printf("%d tRBRAC\n", noLines);
+\< printf("%d tLT\n", noLines);
+\<\= printf("%d tLEQ\n", noLines);
+
+\"[^0-9][a-zA-Z0-9_]*\" {
+    char subbuff[yyleng];
+    memcpy( subbuff, &yytext[1], yyleng-2 );
+    subbuff[yyleng-2] = '\0';
+
+    printf("%d tIDENT (%s)\n", noLines, subbuff);
+} 
+
+\'([^\']*)\' {
+    int i = 0;
+
+    char subbuff[yyleng];
+    memcpy( subbuff, &yytext[1], yyleng-2 );
+    subbuff[yyleng-2] = '\0';
+    
+    printf("%d tSTRING (%s)\n", noLines, subbuff);
+
+    scanf("%[^~]",&yytext);
+    for (; i < yyleng; i++) {
+        if(yytext[i] == '\n') {
+            noLines++;
+        }
+    }
+} 
+
+{tNUM} {
+    int flag = 0;
+    int i = 0;
+    for (i; i < yyleng; i++) {
+        if('.' == yytext[i]) {
+            flag = 1;
+        }
+    }
+    
+    if (flag == 0) {
+        int num = atoi(yytext);
+        printf("%d tNUM (%s) (%d)\n", noLines, yytext, num);
+    }
+    else {  
+        int firstIdx = 0;
+        int secondIdx = 0;
+
+        int i = 0;
+        while(yytext[i] == '0' || yytext[i] == '-') {
+            i++;
+        }
+        if(yytext[i] == '.') {
+            i--;
+        }
+        firstIdx = i;
+
+        i = yyleng-1;
+        while(yytext[i] == '0') {
+            i--;
+        }
+        if(yytext[i] == '.') {
+            i++;
+        }
+        secondIdx = i;
+
+        char subbuff[yyleng];
+        memcpy( subbuff, &yytext[firstIdx], secondIdx-firstIdx+1 );
+        subbuff[secondIdx-firstIdx+1] = '\0';
+
+        if(yytext[0] == '-') {
+            printf("%d tNUM (%s) (-%s)\n", noLines, yytext, subbuff);
+        }
+        else {
+            printf("%d tNUM (%s) (%s)\n", noLines, yytext, subbuff);
+        }
+    }
+    }
+
+" " ;
+\t ;
+. printf("%d ILLEGAL CHARACTER (%s)\n", noLines, yytext);
+
+%%
+
+int main()
+{
+    yylex();
+    return(0);
+}
