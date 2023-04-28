@@ -1,0 +1,74 @@
+%{
+#include "erengungor-hw3.h"
+#include "erengungor-hw3.tab.h" 
+
+int lineCount = 1; //STRINGLERİN İÇİNDE DE \N KARAKTERİ OLABİLİR ONU KONTROL ETMEYİ UNUTMA EN SON, ŞİMDİDEN KARMAŞIKLAŞMASIN DİYE YAPMADIM
+%}
+
+%%
+
+['][^']*[']		{
+    yylval.stringNode.lineNum = lineCount;
+
+    char *result = (char *)malloc(strlen(yytext));
+    strcpy(result,yytext);
+    yylval.stringNode.value = result;
+
+    return tSTRING;
+    }
+
+["]Get["]		return tGET;
+["]Set["]		return tSET;
+["]Function["]		return tFUNCTION;
+["]Print["]		return tPRINT;
+["]If["]		return tIF;
+["]Return["]		return tRETURN;
+
+["]"+"["]               { yylval.lineNum = lineCount; return tADD; } 
+["]"-"["]               { yylval.lineNum = lineCount; return tSUB; } 
+["]"*"["]               { yylval.lineNum = lineCount; return tMUL; } 
+["]"/"["]               { yylval.lineNum = lineCount; return tDIV; } 
+["]"++"["]		return tINC;
+["]">"["]		return tGT;
+["]"=="["]		return tEQUALITY;
+["]"--"["]		return tDEC;
+["]"<"["]		return tLT;
+["]"<="["]		return tLEQ;
+["]">="["]		return tGEQ;
+
+
+["][_a-zA-Z][a-zA-Z0-9_]*["]	return tIDENT;
+
+[0-9]+ { char *result = (char *)malloc(strlen(yytext)); 
+    strcpy(result,yytext);
+    yylval.lineNum = lineCount;
+    yylval.intNode.value = result;
+    return tINT; 
+    }
+
+-[0-9]+ { char *result = (char *)malloc(strlen(yytext)); 
+    strcpy(result,yytext);
+    yylval.lineNum = lineCount;
+    yylval.intNode.value = result;
+    return tINT; 
+    }
+
+[0-9]+"."[0-9]+ { char *result = (char *)malloc(strlen(yytext));
+    strcpy(result,yytext);
+    yylval.lineNum = lineCount;
+    yylval.realNode.value = result;
+    return tREAL; 
+    }
+
+-[0-9]+"."[0-9]+ { char *result = (char *)malloc(strlen(yytext));
+    strcpy(result,yytext);
+    yylval.lineNum = lineCount;
+    yylval.realNode.value = result;
+    return tREAL; 
+    }
+	
+[ \t\r]+ 
+[\n] lineCount += 1;
+.		return yytext[0];
+
+%%
